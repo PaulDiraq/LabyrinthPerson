@@ -19,7 +19,12 @@ public class World {
 	private final int width;
 	/** The world's height. */
 	private final int height;
-    private Position playerPosition = new Position();
+        /** position of the hunters */
+        private ArrayList<Position> hunterPositions = new ArrayList<Position>();
+        /** position of the walls */
+        private ArrayList<Position> wallPositions = new ArrayList<Position>();
+        /** position of the player*/
+ 	private Position playerPosition = new Position();
 
 	/** Set of views registered to be notified of world updates. */
 	private final ArrayList<View> views = new ArrayList<>();
@@ -43,11 +48,19 @@ public class World {
 	public int getHeight() {
 		return height;
 	}
-
-	public int getPlayerX() {
-	    return playerPosition.getX();
-	}
     
+        public ArrayList<Position> getHunterPositions(){
+	    return new ArrayList<>(this.hunterPositions);
+	}
+
+        public ArrayList<Position> getWallPositions(){
+	    return new ArrayList<>(this.wallPositions);
+	}
+
+	public Position getPlayerPosition() {
+	    return playerPosition;
+	}
+        
 	public void setPlayerX(int playerX) {
 	        playerX = Math.max(0, playerX);
 		playerX = Math.min(getWidth() - 1, playerX);
@@ -56,9 +69,6 @@ public class World {
 		updateViews();
 	}
 
-	public int getPlayerY() {
-	    return playerPosition.getY();
-	}
 
 	public void setPlayerY(int playerY) {
 		playerY = Math.max(0, playerY);
@@ -79,8 +89,8 @@ public class World {
 	public void movePlayer(int direction) {	
 		// The direction tells us exactly how much we need to move along
 		// every direction
-		setPlayerX(getPlayerX() + Direction.getDeltaX(direction));
-		setPlayerY(getPlayerY() + Direction.getDeltaY(direction));
+	        setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
+		setPlayerY(this.playerPosition.getY() + Direction.getDeltaY(direction));
 	}
 
 	///////////////////////////////////////////////////////////////////////////

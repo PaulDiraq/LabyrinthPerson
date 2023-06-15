@@ -1,7 +1,7 @@
 package view;
 
 import model.World;
-
+import model.Position;
 /**
  * A view that prints the current state of the world to the console upon every
  * update.
@@ -11,8 +11,9 @@ public class ConsoleView implements View {
 	@Override
 	public void update(World world) {
 		// The player's position
-		int playerX = world.getPlayerX();
-		int playerY = world.getPlayerY();
+	    Position playerPosition = world.getPlayerPosition();
+	    int playerX = playerPosition.getX();
+	    int playerY = playerPosition.getY();
 
 		for (int row = 0; row < world.getHeight(); row++) {
 			for (int col = 0; col < world.getWidth(); col++) {
