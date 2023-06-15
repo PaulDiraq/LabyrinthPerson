@@ -19,10 +19,7 @@ public class World {
 	private final int width;
 	/** The world's height. */
 	private final int height;
-	/** The player's x position in the world. */
-	private int playerX = 0;
-	/** The player's y position in the world. */
-	private int playerY = 0;
+    private Position playerPosition = new Position();
 
 	/** Set of views registered to be notified of world updates. */
 	private final ArrayList<View> views = new ArrayList<>();
@@ -48,26 +45,26 @@ public class World {
 	}
 
 	public int getPlayerX() {
-		return playerX;
+	    return playerPosition.getX();
 	}
-
+    
 	public void setPlayerX(int playerX) {
-		playerX = Math.max(0, playerX);
+	        playerX = Math.max(0, playerX);
 		playerX = Math.min(getWidth() - 1, playerX);
-		this.playerX = playerX;
+		this.playerPosition.setX(playerX);
 		
 		updateViews();
 	}
 
 	public int getPlayerY() {
-		return playerY;
+	    return playerPosition.getY();
 	}
 
 	public void setPlayerY(int playerY) {
 		playerY = Math.max(0, playerY);
 		playerY = Math.min(getHeight() - 1, playerY);
-		this.playerY = playerY;
-		
+		this.playerPosition.setY(playerY);
+
 		updateViews();
 	}
 
