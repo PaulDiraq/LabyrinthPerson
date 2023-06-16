@@ -1,4 +1,5 @@
 package view;
+import java.util.ArrayList;
 
 import model.World;
 import model.Position;
@@ -11,18 +12,25 @@ public class ConsoleView implements View {
 	@Override
 	public void update(World world) {
 		// The player's position
-	    Position playerPosition = world.getPlayerPosition();
-	    int playerX = playerPosition.getX();
-	    int playerY = playerPosition.getY();
-
+	    ArrayList<Position> wallPositions = world.getWallPositions();
+	    ArrayList<Position> hunterPositions = world.getHunterPositions();
 		for (int row = 0; row < world.getHeight(); row++) {
 			for (int col = 0; col < world.getWidth(); col++) {
 				// If the player is here, print #, otherwise print .
-				if (row == playerY && col == playerX) {
-					System.out.print("#");
-				} else {
-					System.out.print(".");
-				}
+			    Position currentPos = new Position(col,row);
+			    if  (wallPositions.contains(currentPos )){
+				System.out.print("W");
+			    }  else if(hunterPositions.contains(currentPos)){
+				System.out.print("V");
+			    } else if (world.getPlayerPosition().equals(currentPos)) {
+				System.out.print("#");
+			    } else if (world.getStartPosition().equals(currentPos)) {
+				System.out.print("S");
+			    } else if (world.getGoalPosition().equals(currentPos)) {
+				System.out.print("Z");
+			    }else {
+				System.out.print(".");
+			    }
 			}
 
 			// A newline after every row

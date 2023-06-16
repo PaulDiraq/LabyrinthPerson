@@ -50,7 +50,17 @@ public  class Position{
 	this.posY=y;
     }
 
-    
+    /**
+       
+     */
+    public boolean equals(Object other){
+	if (this.getClass() != other.getClass()) return false;
+	if (other == null) return false;
+	if (other == this) return true;
+	Position otherPos = (Position) other;
+	if(otherPos.posX == this.posX && otherPos.posY == this.posY) return true;
+	return false;
+    }
     /**
        @return a stringrepresentation of the position.
      */

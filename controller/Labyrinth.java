@@ -1,7 +1,7 @@
 package controller;
 import java.awt.Dimension;
 import java.awt.Insets;
-
+import java.util.ArrayList;
 import javax.swing.JFrame;
 
 import model.World;
@@ -19,11 +19,47 @@ public class Labyrinth {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	// Dimension of the game board (10x10).
-            	int width = 10;
-    			int height = 10;
-    			// Create a new game world.
+            	int width = 40;
+		int height = 30;
+		// Create a new game world.
             	World world = new World(width, height);
-            	
+		// a simple level: W is a Wall
+		// V is a hunter
+		// # is the player
+		// S is the starting position
+		// Z is the goal position
+		ArrayList<String> level = new ArrayList<>();
+		level.add("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+		level.add("WS.....................................W");
+		level.add("W....V.................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W....#.................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W......................................W");
+		level.add("W.....................................ZW");
+		level.add("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+            	world.fromStringArray(level);
             	// Size of a field in the graphical view.
             	Dimension fieldDimensions = new Dimension(25, 25);
             	// Create and register graphical view.

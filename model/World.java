@@ -25,7 +25,10 @@ public class World {
         private ArrayList<Position> wallPositions = new ArrayList<Position>();
         /** position of the player*/
  	private Position playerPosition = new Position();
-
+        /** position of the starting tile*/
+        private Position startPosition = new Position();
+        /** position of the goal tile*/
+        private Position goalPosition = new Position();
 	/** Set of views registered to be notified of world updates. */
 	private final ArrayList<View> views = new ArrayList<>();
 
@@ -56,7 +59,13 @@ public class World {
         public ArrayList<Position> getWallPositions(){
 	    return new ArrayList<>(this.wallPositions);
 	}
-
+        public Position getStartPosition(){
+	    return this.startPosition;
+	}
+        public Position getGoalPosition(){
+	    return this.goalPosition;
+	}
+    
 	public Position getPlayerPosition() {
 	    return playerPosition;
 	}
@@ -68,8 +77,35 @@ public class World {
 		
 		updateViews();
 	}
+    /**
+       parse a state from an array of Strings.
+       length of the array has to be height of the world
+       length of every string has to be the width of the world.
+     */
+        public void fromStringArray(ArrayList<String>state ){
+	    if (state.size() != this.height)
+	    	throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected height: "+this.height +" got: " +state.size());
+	    for (int iy=0; iy<state.size(); ++iy){
+		String row = state.get(iy);
+		if ( row.length()!= this.width)
+		    throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected width: "+this.width + " got: "+ row.length());
+		for(int ix=0; ix < row.length(); ++ix){
+		    char c = row.charAt(ix);
+		    if(c == 'W'){
+			this.wallPositions.add(new Position(ix,iy ));
+		    } else if (c == '#'){
+			this.playerPosition= new Position(ix,iy);
+		    } else if (c == 'V'){
+			this.hunterPositions.add(new Position(ix,iy));
+		    } else if (c == 'S'){
+			this.startPosition= new Position(ix,iy);
+		    } else if (c == 'Z'){
+			this.goalPosition= new Position(ix,iy);
+		    };
 
-
+		}
+	    }
+	} 
 	public void setPlayerY(int playerY) {
 		playerY = Math.max(0, playerY);
 		playerY = Math.min(getHeight() - 1, playerY);
