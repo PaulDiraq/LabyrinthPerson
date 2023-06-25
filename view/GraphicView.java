@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -9,6 +10,7 @@ import javax.swing.JPanel;
 
 import model.World;
 import model.Position;
+import model.GameState;
 /**
  * A graphical view of the world.
  */
@@ -27,28 +29,43 @@ public class GraphicView extends JPanel implements View {
 		this.fieldDimension = fieldDimension;
 		this.bg = new Rectangle(WIDTH, HEIGHT);
 	}
-	
+
+	private void setFontSize(Graphics g,int size){
+		Font myfont =  g.getFont();
+		g.setFont( new Font(myfont.getName(),myfont.getStyle(),size));
+	};
 	/** The background rectangle. */
 	private final Rectangle bg;
 	/** The rectangle we're moving. */
 	private final Rectangle player = new Rectangle(1, 1);
-	
+	/** The State of the Game. */
+	private  GameState gameState=GameState.GAME;
 	/**
 	 * Creates a new instance.
 	 */
 	@Override
 	public void paint(Graphics g) {
+		this.setFontSize(g,18);
 		// Paint background
 		g.setColor(Color.RED);
 		g.fillRect(bg.x, bg.y, bg.width, bg.height);
-		// Paint player
-		g.setColor(Color.BLACK);
-		g.fillRect(player.x, player.y, player.width, player.height);
+		// paint text
+		if (this.gameState == GameState.WIN){
+		    g.setColor(Color.BLACK );
+		    g.drawString("You won",bg.width/2,bg.height/2);
+		} else if(this.gameState == GameState.LOST)  {
+		    g.setColor(Color.BLACK );
+		    g.drawString("You Lost",bg.width/2,bg.height/2);
+		}else {
+		    // Paint player
+		    g.setColor(Color.BLACK);
+		    g.fillRect(player.x, player.y, player.width, player.height);
+		}
 	}
 
 	@Override
 	public void update(World world) {
-		
+		this.gameState=world.getGameState();
 		// Update players size and location
 		player.setSize(fieldDimension);
 

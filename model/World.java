@@ -10,11 +10,11 @@ import view.View;
  * anything about graphics.
  */
 public class World {
-
 	public static final int DIR_RIGHT = 3;
 	public static final int DIR_LEFT = 2;
 	public static final int DIR_DOWN = 1;
 	public static final int DIR_UP = 0;
+        private GameState gameState = GameState.GAME;
 	/** The world's width. */
 	private final int width;
 	/** The world's height. */
@@ -40,7 +40,25 @@ public class World {
 		this.width = width;
 		this.height = height;
 	}
+	///////////////////////////////////////////////////////////////////////////
+	// Game State Management
+	public void startNewGame(){
+		this.gameState = GameState.GAME;
+		this.createNewLevel();
+	}
 
+	private void updateGameState(){
+		if (this.gameState != GameState.GAME) return;
+		if (this.hunterPositions.contains(this.playerPosition)) {
+			this.gameState = GameState.LOST;
+			return;
+		}
+		if (this.playerPosition.equals(this.goalPosition)){
+		        this.gameState = GameState.WIN;
+			return;
+		}
+		return;
+	}
 	///////////////////////////////////////////////////////////////////////////
 	// Getters and Setters
 
@@ -65,7 +83,9 @@ public class World {
         public Position getGoalPosition(){
 	    return this.goalPosition;
 	}
-    
+        public GameState getGameState(){
+	    return this.gameState;
+        }
 	public Position getPlayerPosition() {
 	    return playerPosition;
 	}
@@ -74,45 +94,58 @@ public class World {
 	        playerX = Math.max(0, playerX);
 		playerX = Math.min(getWidth() - 1, playerX);
 		this.playerPosition.setX(playerX);
-		
+	        updateGameState();
 		updateViews();
 	}
-    /**
-       parse a state from an array of Strings.
-       length of the array has to be height of the world
-       length of every string has to be the width of the world.
-     */
-        public void fromStringArray(ArrayList<String>state ){
-	    if (state.size() != this.height)
-	    	throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected height: "+this.height +" got: " +state.size());
-	    for (int iy=0; iy<state.size(); ++iy){
-		String row = state.get(iy);
-		if ( row.length()!= this.width)
-		    throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected width: "+this.width + " got: "+ row.length());
-		for(int ix=0; ix < row.length(); ++ix){
-		    char c = row.charAt(ix);
-		    if(c == 'W'){
-			this.wallPositions.add(new Position(ix,iy ));
-		    } else if (c == '#'){
-			this.playerPosition= new Position(ix,iy);
-		    } else if (c == 'V'){
-			this.hunterPositions.add(new Position(ix,iy));
-		    } else if (c == 'S'){
-			this.startPosition= new Position(ix,iy);
-		    } else if (c == 'Z'){
-			this.goalPosition= new Position(ix,iy);
-		    };
-
-		}
-	    }
-	} 
 	public void setPlayerY(int playerY) {
 		playerY = Math.max(0, playerY);
 		playerY = Math.min(getHeight() - 1, playerY);
 		this.playerPosition.setY(playerY);
-
+	        updateGameState();
 		updateViews();
 	}
+	///////////////////////////////////////////////////////////////////////////
+	// Level and State creation
+	/**
+	   parse a state from an array of Strings.
+	   length of the array has to be height of the world
+	   length of every string has to be the width of the world.
+	*/
+        public void fromStringArray(ArrayList<String>state ){
+		if (state.size() != this.height)
+		    throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected height: "+this.height +" got: " +state.size());
+		for (int iy=0; iy<state.size(); ++iy){
+			String row = state.get(iy);
+			if ( row.length()!= this.width)
+			    throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected width: "+this.width + " got: "+ row.length());
+			for(int ix=0; ix < row.length(); ++ix){
+				char c = row.charAt(ix);
+				if(c == 'W'){
+					this.wallPositions.add(new Position(ix,iy ));
+				} else if (c == '#'){
+					this.playerPosition= new Position(ix,iy);
+				} else if (c == 'V'){
+					this.hunterPositions.add(new Position(ix,iy));
+				} else if (c == 'S'){
+					this.startPosition= new Position(ix,iy);
+				} else if (c == 'Z'){
+					this.goalPosition= new Position(ix,iy);
+				};
+				
+			}
+		}
+	}
+	/**
+	   creates a new level.
+	 */
+	public void createNewLevel(){
+		//TODO
+		//for now just reset the player position to a starting Position
+		this.playerPosition = this.startPosition;
+		this.updateViews();
+	}
+
+
 
 	///////////////////////////////////////////////////////////////////////////
 	// Player Management
