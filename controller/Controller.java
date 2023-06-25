@@ -42,7 +42,6 @@ public class Controller extends JFrame implements KeyListener, ActionListener, M
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	/////////////////// Key Events ////////////////////////////////
@@ -66,7 +65,16 @@ public class Controller extends JFrame implements KeyListener, ActionListener, M
 		case KeyEvent.VK_RIGHT:
 			world.movePlayer(4); // 4 to move right
 			break;
+		case KeyEvent.VK_BACK_SPACE:
+		    world.tryEraseLastDigit();
+		    break;
+		case KeyEvent.VK_ENTER:
+		    world.accept();
+		    break;
 		}
+		if (e.getKeyCode() >= KeyEvent.VK_0 && e.getKeyCode() <= KeyEvent.VK_9){
+		    world.acceptDigit(String.valueOf(e.getKeyCode()-KeyEvent.VK_0).charAt(0));
+		};
 	}
 
 	@Override

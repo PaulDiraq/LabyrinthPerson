@@ -40,6 +40,7 @@ public class GraphicView extends JPanel implements View {
 	private final Rectangle player = new Rectangle(1, 1);
 	/** The State of the Game. */
 	private  GameState gameState=GameState.GAME;
+        private  int numberOfHunters ;
 	/**
 	 * Creates a new instance.
 	 */
@@ -53,9 +54,13 @@ public class GraphicView extends JPanel implements View {
 		if (this.gameState == GameState.WIN){
 		    g.setColor(Color.BLACK );
 		    g.drawString("You won",bg.width/2,bg.height/2);
+		    g.drawString("Number of Hunters:", bg.width/2-170,bg.height/2+30);
+		    g.drawString(String.valueOf(this.numberOfHunters),bg.width/2,bg.height/2+30 );
 		} else if(this.gameState == GameState.LOST)  {
 		    g.setColor(Color.BLACK );
 		    g.drawString("You Lost",bg.width/2,bg.height/2);
+		    g.drawString("Number of Hunters:", bg.width/2-170,bg.height/2+30);
+		    g.drawString(String.valueOf(this.numberOfHunters),bg.width/2,bg.height/2+30 );
 		}else {
 		    // Paint player
 		    g.setColor(Color.BLACK);
@@ -66,6 +71,7 @@ public class GraphicView extends JPanel implements View {
 	@Override
 	public void update(World world) {
 		this.gameState=world.getGameState();
+		this.numberOfHunters = world.getNumberOfHunters();
 		// Update players size and location
 		player.setSize(fieldDimension);
 
