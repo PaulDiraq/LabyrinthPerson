@@ -82,7 +82,7 @@ public class World {
        length of the array has to be height of the world
        length of every string has to be the width of the world.
      */
-        public void fromStringArray(ArrayList<String>state ){
+    public void fromStringArray(ArrayList<String>state ){
 	    if (state.size() != this.height)
 	    	throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected height: "+this.height +" got: " +state.size());
 	    for (int iy=0; iy<state.size(); ++iy){
@@ -102,8 +102,7 @@ public class World {
 		    } else if (c == 'Z'){
 			this.goalPosition= new Position(ix,iy);
 		    };
-
-		}
+			}
 	    }
 	} 
 	public void setPlayerY(int playerY) {
@@ -125,8 +124,40 @@ public class World {
 	public void movePlayer(int direction) {	
 		// The direction tells us exactly how much we need to move along
 		// every direction
-	        setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
+	    setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
 		setPlayerY(this.playerPosition.getY() + Direction.getDeltaY(direction));
+		
+		int playerX = this.playerPosition.getX();
+		int playerY = this.playerPosition.getY();
+        ArrayList<Position> hunterPositions = getHunterPositions();
+		for (Position hunterPosition : hunterPositions) {
+
+			int hunterX = hunterPosition.getX();
+			int hunterY = hunterPosition.getY();
+
+			int difX = Math.abs(hunterX - playerX);
+			int difY = Math.abs(hunterY - playerY);
+			if (difX > difY) {
+				if (playerX > hunterX) {
+					hunterX ++;
+				} else if (playerX < hunterX) {
+					hunterX --;
+				}
+			}
+			else if (difY > difX) {
+				if (playerY > hunterY) {
+					hunterY ++;
+				} else if (playerY < hunterY) {
+					hunterY --;
+				}
+			}
+			hunterPosition.setX(hunterX);
+			hunterPosition.setY(hunterY);
+
+			if (playerX == hunterX && playerY == hunterY) {
+				System.exit(0);
+			}
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////

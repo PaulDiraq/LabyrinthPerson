@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -33,6 +34,8 @@ public class GraphicView extends JPanel implements View {
 	/** The rectangle we're moving. */
 	private final Rectangle player = new Rectangle(1, 1);
 	
+	private final ArrayList<Rectangle> hunters = new ArrayList<>();
+	
 	/**
 	 * Creates a new instance.
 	 */
@@ -44,6 +47,11 @@ public class GraphicView extends JPanel implements View {
 		// Paint player
 		g.setColor(Color.BLACK);
 		g.fillRect(player.x, player.y, player.width, player.height);
+
+		g.setColor(Color.GREEN);
+        for (Rectangle hunter : hunters) {
+            g.fillRect(hunter.x, hunter.y, hunter.width, hunter.height);
+        }
 	}
 
 	@Override
@@ -58,7 +66,20 @@ public class GraphicView extends JPanel implements View {
 		player.setLocation((int)
 				(playerX * fieldDimension.width),
 				(int) (playerY * fieldDimension.height));
-		repaint();
+		
+		ArrayList<Position> hunterPositions = world.getHunterPositions();
+        hunters.clear();
+        for (Position hunterPosition : hunterPositions) {
+            Rectangle hunter = new Rectangle(1, 1);
+            hunter.setSize(fieldDimension);
+
+            int hunterX = hunterPosition.getX();
+            int hunterY = hunterPosition.getY();
+            hunter.setLocation(hunterX * fieldDimension.width, hunterY * fieldDimension.height);
+
+            hunters.add(hunter);
+        }
+        repaint();
 	}
 	
 }
