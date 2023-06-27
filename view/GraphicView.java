@@ -78,7 +78,7 @@ public class GraphicView extends JPanel implements View {
 		    g.drawString(String.valueOf(this.numberOfHunters),bg.width/2,bg.height/2+30 );
 		}else {
 		    // Paint player
-		    Image playerImage = loadImage("face.png", fieldDimension.width, fieldDimension.height); // Load the image for the player
+		    Image playerImage = loadImage("view\\face.png", fieldDimension.width, fieldDimension.height); // Load the image for the player
 			int playerX = playerPositionStored.getX() * fieldDimension.width;
 			int playerY = playerPositionStored.getY() * fieldDimension.height;
 			g.drawImage(playerImage, playerX, playerY, null);
