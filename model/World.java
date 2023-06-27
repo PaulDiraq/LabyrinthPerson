@@ -2,6 +2,8 @@ package model;
 
 import java.util.ArrayList;
 
+//import org.omg.PortableInterceptor.NON_EXISTENT;
+
 import view.View;
 
 /**
@@ -140,7 +142,7 @@ public class World {
 	  only works if game is in a menue.
 	 */
 	public void accept(){
-	    if (this.state != GameState.GAME){
+	    if (this.gameState != GameState.GAME){
 		this.startNewGame();
 	    }
 	};
@@ -211,6 +213,54 @@ public class World {
 	        updateGameState();
 		updateViews();
 	}
+
+    /**
+       parse a state from an array of Strings.
+       length of the array has to be height of the world
+       length of every string has to be the width of the world.
+     */
+    public void fromStringArray(ArrayList<String>state ){
+	    if (state.size() != this.height)
+	    	throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected height: "+this.height +" got: " +state.size());
+	    for (int iy=0; iy<state.size(); ++iy){
+		String row = state.get(iy);
+		if ( row.length()!= this.width)
+		    throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected width: "+this.width + " got: "+ row.length());
+		for(int ix=0; ix < row.length(); ++ix){
+		    char c = row.charAt(ix);
+		    if(c == 'W'){
+			this.wallPositions.add(new Position(ix,iy ));
+		    } else if (c == '#'){
+			this.playerPosition= new Position(ix,iy);
+		    } else if (c == 'V'){
+			this.hunterPositions.add(new Position(ix,iy));
+		    } else if (c == 'S'){
+			this.startPosition= new Position(ix,iy);
+		    } else if (c == 'Z'){
+			this.goalPosition= new Position(ix,iy);
+		    };
+			}
+	    }
+	} 
+
+	/**
+	 * Checks if there is a Wall at given Position
+	 * @param posX 
+	 * @param posY
+	 * @return true if wall in the way and false if not
+	 */
+	public boolean isWall(int posX, int posY) {
+		ArrayList<Position> wallPositions = getWallPositions();
+		for (Position wall : wallPositions) {
+			int wallX = wall.getX();
+			int wallY = wall.getY();
+			if (posX == wallX && posY == wallY) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void setPlayerY(int playerY) {
 		playerY = Math.max(0, playerY);
 		playerY = Math.min(getHeight() - 1, playerY);
@@ -220,35 +270,6 @@ public class World {
 	}
 	///////////////////////////////////////////////////////////////////////////
 	// Level and State creation
-	/**
-	   parse a state from an array of Strings.
-	   length of the array has to be height of the world
-	   length of every string has to be the width of the world.
-	*/
-        public void fromStringArray(ArrayList<String>state ){
-		if (state.size() != this.height)
-		    throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected height: "+this.height +" got: " +state.size());
-		for (int iy=0; iy<state.size(); ++iy){
-			String row = state.get(iy);
-			if ( row.length()!= this.width)
-			    throw new IllegalArgumentException("mismatch between world dimensions and parsing dimensions: expected width: "+this.width + " got: "+ row.length());
-			for(int ix=0; ix < row.length(); ++ix){
-				char c = row.charAt(ix);
-				if(c == 'W'){
-					this.wallPositions.add(new Position(ix,iy ));
-				} else if (c == '#'){
-					this.playerPosition= new Position(ix,iy);
-				} else if (c == 'V'){
-					this.hunterPositions.add(new Position(ix,iy));
-				} else if (c == 'S'){
-					this.startPosition= new Position(ix,iy);
-				} else if (c == 'Z'){
-					this.goalPosition= new Position(ix,iy);
-				};
-				
-			}
-		}
-	}
 	/**
 	   creates a new level.
 	 */
@@ -271,9 +292,55 @@ public class World {
 	 */
 	public void movePlayer(int direction) {	
 		// The direction tells us exactly how much we need to move along
-		// every direction
-	        setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
+		// every direction. Every move also makes the hunters move
+	    setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
 		setPlayerY(this.playerPosition.getY() + Direction.getDeltaY(direction));
+		huntPlayer(1);
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	// Hunter Management
+
+	/**
+ 	* Moves the hunters towards the player's position based on the specified difficulty level.
+ 	*
+ 	* @param difficulty The difficulty level indicating the behavior of the hunters.
+ 	*/
+	public void huntPlayer(int difficulty) {
+		// Every Hunter gets moved along the coordinate with
+		// the biggest distance to the player unless there is a wall in their way
+		int playerX = this.playerPosition.getX();
+		int playerY = this.playerPosition.getY();
+        ArrayList<Position> hunterPositions = getHunterPositions();
+		for (Position hunterPosition : hunterPositions) {
+
+			int hunterX = hunterPosition.getX();
+			int hunterY = hunterPosition.getY();
+
+			int difX = Math.abs(hunterX - playerX);
+			int difY = Math.abs(hunterY - playerY);
+
+			if (difX > difY) {
+				if (playerX > hunterX && !isWall(hunterX + 1, hunterY)) {
+					hunterX ++;
+				} else if (playerX < hunterX && !isWall(hunterX - 1, hunterY)) {
+					hunterX --;
+				}
+			}
+			else if (difX < difY) {
+				if (playerY > hunterY && !isWall(hunterX, hunterY + 1)) {
+					hunterY ++;
+				} else if (playerY < hunterY && !isWall(hunterX, hunterY - 1)) {
+					hunterY --;
+				}
+			}
+			hunterPosition.setX(hunterX);
+			hunterPosition.setY(hunterY);
+
+			if (playerX == hunterX && playerY == hunterY) {
+				System.exit(0);
+			}
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////
