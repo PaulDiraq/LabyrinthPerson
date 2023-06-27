@@ -33,8 +33,10 @@ public class GraphicView extends JPanel implements View {
 	private final Rectangle bg;
 	/** The rectangle we're moving. */
 	private final Rectangle player = new Rectangle(1, 1);
-	
+	/** List of all Hunters. */
 	private final ArrayList<Rectangle> hunters = new ArrayList<>();
+	/** List of all Walls. */
+	private final ArrayList<Rectangle> walls = new ArrayList<>();
 	
 	/**
 	 * Creates a new instance.
@@ -42,15 +44,20 @@ public class GraphicView extends JPanel implements View {
 	@Override
 	public void paint(Graphics g) {
 		// Paint background
-		g.setColor(Color.RED);
+		g.setColor(Color.BLACK);
 		g.fillRect(bg.x, bg.y, bg.width, bg.height);
 		// Paint player
-		g.setColor(Color.BLACK);
-		g.fillRect(player.x, player.y, player.width, player.height);
-
 		g.setColor(Color.GREEN);
+		g.fillRect(player.x, player.y, player.width, player.height);
+		// Paint Hunters
+		g.setColor(Color.RED);
         for (Rectangle hunter : hunters) {
             g.fillRect(hunter.x, hunter.y, hunter.width, hunter.height);
+        }
+		// Paint Walls
+		g.setColor(Color.BLUE);
+        for (Rectangle wall : walls) {
+            g.fillRect(wall.x, wall.y, wall.width, wall.height);
         }
 	}
 
@@ -66,7 +73,8 @@ public class GraphicView extends JPanel implements View {
 		player.setLocation((int)
 				(playerX * fieldDimension.width),
 				(int) (playerY * fieldDimension.height));
-		
+
+		// Update size and location of all Hunters
 		ArrayList<Position> hunterPositions = world.getHunterPositions();
         hunters.clear();
         for (Position hunterPosition : hunterPositions) {
@@ -78,8 +86,22 @@ public class GraphicView extends JPanel implements View {
             hunter.setLocation(hunterX * fieldDimension.width, hunterY * fieldDimension.height);
 
             hunters.add(hunter);
+		}
+
+		// Paint all Walls
+		ArrayList<Position> wallPositions = world.getWallPositions();
+		walls.clear();
+        for (Position wallPosition : wallPositions) {
+            Rectangle wall = new Rectangle(1, 1);
+            wall.setSize(fieldDimension);
+
+            int wallX = wallPosition.getX();
+            int wallY = wallPosition.getY();
+            wall.setLocation(wallX * fieldDimension.width, wallY * fieldDimension.height);
+
+            walls.add(wall);
+
         }
         repaint();
 	}
-	
 }

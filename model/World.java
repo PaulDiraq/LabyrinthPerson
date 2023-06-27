@@ -2,6 +2,8 @@ package model;
 
 import java.util.ArrayList;
 
+import org.omg.PortableInterceptor.NON_EXISTENT;
+
 import view.View;
 
 /**
@@ -105,6 +107,25 @@ public class World {
 			}
 	    }
 	} 
+
+	/**
+	 * Checks if there is a Wall at given Position
+	 * @param posX 
+	 * @param posY
+	 * @return true if wall in the way and false if not
+	 */
+	public boolean isWall(int posX, int posY) {
+		ArrayList<Position> wallPositions = getWallPositions();
+		for (Position wall : wallPositions) {
+			int wallX = wall.getX();
+			int wallY = wall.getY();
+			if (posX == wallX && posY == wallY) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void setPlayerY(int playerY) {
 		playerY = Math.max(0, playerY);
 		playerY = Math.min(getHeight() - 1, playerY);
@@ -123,10 +144,23 @@ public class World {
 	 */
 	public void movePlayer(int direction) {	
 		// The direction tells us exactly how much we need to move along
-		// every direction
+		// every direction. Every move also makes the hunters move
 	    setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
 		setPlayerY(this.playerPosition.getY() + Direction.getDeltaY(direction));
-		
+		huntPlayer(1);
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	// Hunter Management
+
+	/**
+ 	* Moves the hunters towards the player's position based on the specified difficulty level.
+ 	*
+ 	* @param difficulty The difficulty level indicating the behavior of the hunters.
+ 	*/
+	public void huntPlayer(int difficulty) {
+		// Every Hunter gets moved along the coordinate with
+		// the biggest distance to the player unless there is a wall in their way
 		int playerX = this.playerPosition.getX();
 		int playerY = this.playerPosition.getY();
         ArrayList<Position> hunterPositions = getHunterPositions();
@@ -137,17 +171,18 @@ public class World {
 
 			int difX = Math.abs(hunterX - playerX);
 			int difY = Math.abs(hunterY - playerY);
+
 			if (difX > difY) {
-				if (playerX > hunterX) {
+				if (playerX > hunterX && !isWall(hunterX + 1, hunterY)) {
 					hunterX ++;
-				} else if (playerX < hunterX) {
+				} else if (playerX < hunterX && !isWall(hunterX - 1, hunterY)) {
 					hunterX --;
 				}
 			}
-			else if (difY > difX) {
-				if (playerY > hunterY) {
+			else if (difX < difY) {
+				if (playerY > hunterY && !isWall(hunterX, hunterY + 1)) {
 					hunterY ++;
-				} else if (playerY < hunterY) {
+				} else if (playerY < hunterY && !isWall(hunterX, hunterY - 1)) {
 					hunterY --;
 				}
 			}
