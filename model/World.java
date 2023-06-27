@@ -54,17 +54,17 @@ public class World {
 		return height;
 	}
     
-        public ArrayList<Position> getHunterPositions(){
+    public ArrayList<Position> getHunterPositions(){
 	    return new ArrayList<>(this.hunterPositions);
 	}
 
-        public ArrayList<Position> getWallPositions(){
+    public ArrayList<Position> getWallPositions(){
 	    return new ArrayList<>(this.wallPositions);
 	}
-        public Position getStartPosition(){
+    public Position getStartPosition(){
 	    return this.startPosition;
 	}
-        public Position getGoalPosition(){
+    public Position getGoalPosition(){
 	    return this.goalPosition;
 	}
     
@@ -73,12 +73,19 @@ public class World {
 	}
         
 	public void setPlayerX(int playerX) {
-	        playerX = Math.max(0, playerX);
+	    playerX = Math.max(0, playerX);
 		playerX = Math.min(getWidth() - 1, playerX);
 		this.playerPosition.setX(playerX);
-		
 		updateViews();
 	}
+
+	public void setPlayerY(int playerY) {
+			playerY = Math.max(0, playerY);
+			playerY = Math.min(getHeight() - 1, playerY);
+			this.playerPosition.setY(playerY);
+		updateViews();
+	}
+	
     /**
        parse a state from an array of Strings.
        length of the array has to be height of the world
@@ -126,14 +133,6 @@ public class World {
 		return false;
 	}
 
-	public void setPlayerY(int playerY) {
-		playerY = Math.max(0, playerY);
-		playerY = Math.min(getHeight() - 1, playerY);
-		this.playerPosition.setY(playerY);
-
-		updateViews();
-	}
-
 	///////////////////////////////////////////////////////////////////////////
 	// Player Management
 	
@@ -145,9 +144,11 @@ public class World {
 	public void movePlayer(int direction) {	
 		// The direction tells us exactly how much we need to move along
 		// every direction. Every move also makes the hunters move
-	    setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
-		setPlayerY(this.playerPosition.getY() + Direction.getDeltaY(direction));
-		huntPlayer(1);
+		if (!isWall(this.playerPosition.getX() + Direction.getDeltaX(direction), this.playerPosition.getY() + Direction.getDeltaY(direction))) {
+	    	setPlayerX(this.playerPosition.getX() + Direction.getDeltaX(direction));
+			setPlayerY(this.playerPosition.getY() + Direction.getDeltaY(direction));
+			huntPlayer();
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -158,14 +159,14 @@ public class World {
  	*
  	* @param difficulty The difficulty level indicating the behavior of the hunters.
  	*/
-	public void huntPlayer(int difficulty) {
+	public void huntPlayer() {
 		// Every Hunter gets moved along the coordinate with
 		// the biggest distance to the player unless there is a wall in their way
 		int playerX = this.playerPosition.getX();
-		int playerY = this.playerPosition.getY();
-        ArrayList<Position> hunterPositions = getHunterPositions();
-		for (Position hunterPosition : hunterPositions) {
+    	int playerY = this.playerPosition.getY();
+    	ArrayList<Position> hunterPositions = getHunterPositions();
 
+		for (Position hunterPosition : hunterPositions) {
 			int hunterX = hunterPosition.getX();
 			int hunterY = hunterPosition.getY();
 
@@ -173,19 +174,75 @@ public class World {
 			int difY = Math.abs(hunterY - playerY);
 
 			if (difX > difY) {
-				if (playerX > hunterX && !isWall(hunterX + 1, hunterY)) {
-					hunterX ++;
-				} else if (playerX < hunterX && !isWall(hunterX - 1, hunterY)) {
-					hunterX --;
+				if (playerX > hunterX) {
+					// Check if moving right is possible and there is no wall
+					if (!isWall(hunterX + 1, hunterY)) {
+						hunterX++;
+					}
+					// If moving right is not possible, try moving in a different direction
+					else if (!isWall(hunterX, hunterY + 1) && !isWall(hunterX, hunterY - 1)) {
+						// Move up if there is no wall
+						if (!isWall(hunterX, hunterY + 1)) {
+							hunterY++;
+						}
+						// Move down if there is no wall
+						else if (!isWall(hunterX, hunterY - 1)) {
+							hunterY--;
+						}
+					}
+				} else if (playerX < hunterX) {
+					// Check if moving left is possible and there is no wall
+					if (!isWall(hunterX - 1, hunterY)) {
+						hunterX--;
+					}
+					// If moving left is not possible, try moving in a different direction
+					else if (!isWall(hunterX, hunterY + 1) && !isWall(hunterX, hunterY - 1)) {
+						// Move up if there is no wall
+						if (!isWall(hunterX, hunterY + 1)) {
+							hunterY++;
+						}
+						// Move down if there is no wall
+						else if (!isWall(hunterX, hunterY - 1)) {
+							hunterY--;
+						}
+					}
+				}
+			} else if (difX < difY) {
+				if (playerY > hunterY) {
+					// Check if moving down is possible and there is no wall
+					if (!isWall(hunterX, hunterY + 1)) {
+						hunterY++;
+					}
+					// If moving down is not possible, try moving in a different direction
+					else if (!isWall(hunterX + 1, hunterY) && !isWall(hunterX - 1, hunterY)) {
+						// Move right if there is no wall
+						if (!isWall(hunterX + 1, hunterY)) {
+							hunterX++;
+						}
+						// Move left if there is no wall
+						else if (!isWall(hunterX - 1, hunterY)) {
+							hunterX--;
+						}
+					}
+				} else if (playerY < hunterY) {
+					// Check if moving up is possible and there is no wall
+					if (!isWall(hunterX, hunterY - 1)) {
+						hunterY--;
+					}
+					// If moving up is not possible, try moving in a different direction
+					else if (!isWall(hunterX + 1, hunterY) && !isWall(hunterX - 1, hunterY)) {
+						// Move right if there is no wall
+						if (!isWall(hunterX + 1, hunterY)) {
+							hunterX++;
+						}
+						// Move left if there is no wall
+						else if (!isWall(hunterX - 1, hunterY)) {
+							hunterX--;
+						}
+					}
 				}
 			}
-			else if (difX < difY) {
-				if (playerY > hunterY && !isWall(hunterX, hunterY + 1)) {
-					hunterY ++;
-				} else if (playerY < hunterY && !isWall(hunterX, hunterY - 1)) {
-					hunterY --;
-				}
-			}
+
 			hunterPosition.setX(hunterX);
 			hunterPosition.setY(hunterY);
 
