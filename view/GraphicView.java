@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import model.World;
 import model.Position;
 import model.GameState;
+
 /**
  * A graphical view of the world.
  */
@@ -27,9 +28,9 @@ public class GraphicView extends JPanel implements View {
 	private final int WIDTH;
 	/** The view's height. */
 	private final int HEIGHT;
-	
+    /** */
 	private Dimension fieldDimension;
-
+    /** position of the player */
 	private Position playerPositionStored; // Store the player's position
 	
 	public GraphicView(int width, int height, Dimension fieldDimension) {
@@ -79,7 +80,7 @@ public class GraphicView extends JPanel implements View {
 		}else {
 		    // Paint player
 			// Source: https://www.iconsdb.com/white-icons/happy-icon.html
-		    Image playerImage = loadImage("view\\face.png", fieldDimension.width, fieldDimension.height); // Load the image for the player
+		    Image playerImage = loadImage("view"+File.separator+"face.png", fieldDimension.width, fieldDimension.height); // Load the image for the player
 			int playerX = playerPositionStored.getX() * fieldDimension.width;
 			int playerY = playerPositionStored.getY() * fieldDimension.height;
 			g.drawImage(playerImage, playerX, playerY, null);
@@ -147,14 +148,15 @@ public class GraphicView extends JPanel implements View {
 		 * @param imagePath the path to the image file
 		 * @return the loaded Image object
 		 */
-		private Image loadImage(String imagePath, int width, int height) {
-		Image image = null;
-		try {
-			image = ImageIO.read(new File(imagePath));
-			image = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return image;
-		}
+    private Image loadImage(String imagePath, int width, int height) {
+	System.out.println(imagePath);
+	Image image = null;
+	try {
+	    image = ImageIO.read(new File(imagePath));
+	    image = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+	return image;
+    }
 }

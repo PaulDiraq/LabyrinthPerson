@@ -114,7 +114,7 @@ public class World {
 	 */
 	public void startNewGame(){
 		this.gameState = GameState.GAME;
-		this.createNewLevel();
+		//this.createNewLevel();
 	}
 
 	/**
@@ -154,7 +154,6 @@ public class World {
 	 */
 	public void acceptDigit(char digit){
 	    // only allow to change the number of hunters if no game is ongoing.
-	    System.out.println(""+digit+ (this.gameState != GameState.GAME));
 	    if (this.gameState != GameState.GAME){
 		this.hunterNumberTracker.acceptDigit(digit);
 		updateViews();
