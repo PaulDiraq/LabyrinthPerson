@@ -7,6 +7,12 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import java.awt.Image;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JPanel;
 
 import model.World;
@@ -23,6 +29,8 @@ public class GraphicView extends JPanel implements View {
 	private final int HEIGHT;
 	
 	private Dimension fieldDimension;
+
+	private Position playerPositionStored; // Store the player's position
 	
 	public GraphicView(int width, int height, Dimension fieldDimension) {
 		this.WIDTH = width;
@@ -70,8 +78,10 @@ public class GraphicView extends JPanel implements View {
 		    g.drawString(String.valueOf(this.numberOfHunters),bg.width/2,bg.height/2+30 );
 		}else {
 		    // Paint player
-		    g.setColor(Color.BLACK);
-		    g.fillRect(player.x, player.y, player.width, player.height);
+		    Image playerImage = loadImage("face.png", fieldDimension.width, fieldDimension.height); // Load the image for the player
+			int playerX = playerPositionStored.getX() * fieldDimension.width;
+			int playerY = playerPositionStored.getY() * fieldDimension.height;
+			g.drawImage(playerImage, playerX, playerY, null);
 		    // Paint Hunters
 		    g.setColor(Color.RED);
 		    for (Rectangle hunter : hunters) {
@@ -82,12 +92,9 @@ public class GraphicView extends JPanel implements View {
 		    for (Rectangle wall : walls) {
 			g.fillRect(wall.x, wall.y, wall.width, wall.height);
 		    }
+			}
 		    
 		}
-		// Paint player
-		g.setColor(Color.GREEN);
-		g.fillRect(player.x, player.y, player.width, player.height);
-	}
 
 	@Override
 	public void update(World world) {
@@ -97,6 +104,7 @@ public class GraphicView extends JPanel implements View {
 		player.setSize(fieldDimension);
 
 		Position playerPosition = world.getPlayerPosition();
+		playerPositionStored = playerPosition;
 		int playerX = playerPosition.getX();
 		int playerY = playerPosition.getY();		
 		player.setLocation((int)
@@ -133,4 +141,19 @@ public class GraphicView extends JPanel implements View {
         }
         repaint();
 	}
+	/**
+		 * Load an image from the given file path.
+		 * @param imagePath the path to the image file
+		 * @return the loaded Image object
+		 */
+		private Image loadImage(String imagePath, int width, int height) {
+		Image image = null;
+		try {
+			image = ImageIO.read(new File(imagePath));
+			image = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return image;
+		}
 }
