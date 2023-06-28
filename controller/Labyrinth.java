@@ -28,47 +28,17 @@ public class Labyrinth {
 		// # is the player
 		// S is the starting position
 		// Z is the goal position
-		ArrayList<String> level = new ArrayList<>();
-		level.add("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-		level.add("WS.....................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W....#.................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W......................................W");
-		level.add("W.....................................ZW");
-		level.add("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            	world.fromStringArray(level);
             	// Size of a field in the graphical view.
             	Dimension fieldDimensions = new Dimension(25, 25);
             	// Create and register graphical view.
             	GraphicView gview = new GraphicView(width * fieldDimensions.width, height * fieldDimensions.height, fieldDimensions);
+		world.setInitialGame();
             	world.registerView(gview);
                 gview.setVisible(true);
-            	
+
+		
             	// Create and register console view.
-        		ConsoleView cview = new ConsoleView();
+		ConsoleView cview = new ConsoleView();
             	world.registerView(cview);
             	
             	// Create controller and initialize JFrame.
